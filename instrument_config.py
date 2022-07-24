@@ -46,7 +46,7 @@ class Water_sampler(ABC):
         pass
 
 class IOWWaterSampler(Water_sampler):
-    def firing_mode(self, mode:int = None)->str:
+    def firing_mode( mode:int = None)->str:
         if mode == 1:
             return str(0)
         elif mode == 2:
@@ -106,16 +106,15 @@ class GetPathValues:
                     Cookie[0].setAttribute('value', path_data[key]['value'])
                     with open(path_data['SetupFilePath']['value'], 'w') as tags:
                         domObj.writexml(tags)
-                    print('written')
+                   
             else:
                 for d in path_data[key]:
-                    print(d)
                     for new_key, _ in d.items():
-                        print(key)
                         with open(path_data['SetupFilePath']['value'], 'r') as tags:
                             domObj = minidom.parse(tags)
                             group = domObj.documentElement
                             Cookie = group.getElementsByTagName(key)
+                            
                             Cookie[0].setAttribute(new_key, d[new_key])
                             with open(path_data['SetupFilePath']['value'], 'w') as tags:
                                 domObj.writexml(tags)

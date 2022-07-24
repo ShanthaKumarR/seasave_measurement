@@ -16,7 +16,7 @@ def get_path_values_object_init():
 
 @pytest.fixture(scope='module')
 def get_path_values_object():
-    return GetPathValues('test_docs\\test_config_file.XMLCON', 'test_docs\\test_setup_file.psa', 'test_docs', DataDictionary, 0)
+    return GetPathValues('test_docs\\test_config_file.XMLCON', 'test_docs\\test_setup_file.psa', 'test_docs', DataDictionary, 1)
 
 
 @pytest.fixture(scope='module')
