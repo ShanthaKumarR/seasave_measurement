@@ -1,8 +1,11 @@
-import os 
+import os
+from pickle import NONE 
 from xml.dom import minidom 
 import pytest
 from instrument_config import IOWWaterSampler
-#from instrument_config import DataDictionary
+from instrument_config import SBE_carosusel_type, ComputeLastOutputFileName, SetPressure, MetaDataWriter
+import shutil
+import time
 
 class Test_DataDictionary:
     
@@ -74,4 +77,111 @@ class Test_GetPathValues:
                             group = domObj.documentElement
                             Cookie = group.getElementsByTagName(key) 
                             assert Cookie[0].getAttribute(new_key) == d[new_key]
+
+
+
+class Test_IOWWaterSampler:
+    @pytest.mark.parametrize(('mode', 'expected'), ((1, '0'), (2,'3'), (NONE, '0')))
+    def test_firing_mode(self, mode, expected):
+        assert IOWWaterSampler.firing_mode(mode) == expected
+
+
+def test_SBE_carosusel_type():
+    assert SBE_carosusel_type('SBE_carosuel') == 5
+
+
+class Test_ComputeLastOutputFileName:
+    def test_get_last_file_name_norecord(self):
+        try:
+            os.mkdir('temp')
+            assert ComputeLastOutputFileName.get_last_file_name('temp') == 'No previous record found'
+            os.rmdir('temp')
+        except FileExistsError:
+            assert ComputeLastOutputFileName.get_last_file_name('temp') == '02.hex'
+            shutil.rmtree('temp')
     
+    def test_get_last_file_name_with_record(self):
+        try:
+            os.mkdir('temp')
+            test_file_list = ['01.hex', '02.hex']
+            for file_name in test_file_list:
+                with open('temp\\'+file_name, 'w') as file:
+                    print('Creating :', 'temp\\'+file_name)
+                    time.sleep(2)  
+            assert ComputeLastOutputFileName.get_last_file_name('temp') == '02.hex'
+            shutil.rmtree('temp')
+        except FileExistsError:
+            assert ComputeLastOutputFileName.get_last_file_name('temp') == '02.hex'
+            shutil.rmtree('temp')
+
+
+class Test_SetPressure:
+    @pytest.mark.parametrize(('num_bottles', 'expected'), ((5, 5), (2,2), (3, 3)))
+    def test_create_New_pressure_tags(self, SetPressure_obj, num_bottles, expected):
+
+        SetPressure_obj.create_New_pressure_tags(num_bottles)
+        with open(SetPressure_obj.setup_file_path,'r') as f:
+            xmldoc = minidom.parse(f)   
+            Data = xmldoc.getElementsByTagName('WaterSamplerConfiguration')[0]
+            AutoFireData = Data.getElementsByTagName('AutoFireData')[0]
+            DataTable = AutoFireData.getElementsByTagName('DataTable') 
+            for i in DataTable:
+                RmRow = i.getElementsByTagName('Row')
+            assert len(RmRow) == expected
+            for (indx, botnum), newRow in zip(enumerate(range(1, num_bottles+1)), DataTable):       
+                assert  newRow.getElementsByTagName('Row')[0].getAttribute("BottleNumber") == str(botnum)         
+                assert newRow.getElementsByTagName('Row')[0].getAttribute("index")== str(indx)
+                assert  newRow.getElementsByTagName('Row')[0].getAttribute("FireAt")== str(-0)
+
+    @pytest.mark.parametrize("pressure_value, bottle_number", [([5,6] ,2), ([2, 3, 4, 5], 4)])
+    def test_set_pressure_value(self, SetPressure_obj, pressure_value, bottle_number):
+        SetPressure_obj.create_New_pressure_tags(bottle_number)
+        SetPressure_obj.set_pressure_value(pressure_value)
+        with open(SetPressure_obj.setup_file_path,'r') as f:    
+                    xmldoc = minidom.parse(f)        
+                    Data = xmldoc.getElementsByTagName('WaterSamplerConfiguration')[0]
+                    AutoFireData = Data.getElementsByTagName('AutoFireData')[0]
+                    DataTable = AutoFireData.getElementsByTagName('DataTable')               
+                    for i in DataTable:
+                        RmRow = i.getElementsByTagName('Row')
+                        for inx, row_tags in enumerate(RmRow):
+                            assert RmRow[inx].getAttribute("BottleNumber") ==  str(inx+1)
+                            assert RmRow[inx].getAttribute("index") ==  str(inx)
+                            assert RmRow[inx].getAttribute("FireAt")== str(pressure_value[inx])
+
+
+class Test_MetaDataWriter:
+    meta_data = {
+    "expedition_number":"EXP", 
+    "latitude":"LAT",
+    "expedition_name":"EXP_NM",
+    "longitude":"LON",
+    "timestamp":"TMS",
+    "depth":"DP",
+    "airpressure":"AP",
+    "datetime":"DT", 
+    "station_name": "ST"
+}
+    metadata_writer_obj = MetaDataWriter('test_docs\\test_setup_file.psa', meta_data)
+    def test_create_new_prompt_tag(self):
+        try:
+            with open('test_docs\\test_setup_file.psa','r') as f:
+                xmldoc = minidom.parse(f)        
+                HeaderForm = xmldoc.getElementsByTagName('HeaderForm')
+                RmRow = [i.getElementsByTagName('Prompt') for i in HeaderForm]
+                assert len(RmRow[0]) == len(self.meta_data)
+                for l in RmRow:
+                    for inx, tag in enumerate(l):
+                        assert tag.getAttribute("index") ==  str(inx)
+        except FileNotFoundError:
+            print('file is missing')
+
+    def test_set_mata_data(self):
+            with open('test_docs\\test_setup_file.psa','r') as f:
+                xmldoc = minidom.parse(f)        
+                HeaderForm = xmldoc.getElementsByTagName('HeaderForm')
+                RmRow = [i.getElementsByTagName('Prompt') for i in HeaderForm]
+                assert len(RmRow[0]) == len(self.meta_data)
+                for l in RmRow:
+                    for tag, key in zip(l, self.meta_data):
+                        assert tag.getAttribute("value") ==   key+' = '+ str(self.meta_data[key])
