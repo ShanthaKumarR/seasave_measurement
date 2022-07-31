@@ -46,11 +46,14 @@ class Water_sampler(ABC):
         pass
 
 class IOWWaterSampler(Water_sampler):
+    @staticmethod
     def firing_mode( mode:int = None)->str:
         if mode == 1:
             return str(0)
         elif mode == 2:
             return str(3)
+        else:
+            return str(0)
 
 class DataDictionary(DataStructuringStrategy):
     @staticmethod   
@@ -79,7 +82,7 @@ class ComputeLastOutputFileName(ComputeLastFileName):
             latest_file = max(list_of_files, key=os.path.getctime)
             return latest_file.split('\\')[-1] 
         except ValueError:
-            return 'No prvious record found'
+            return 'No previous record found'
 
 class GetPathValues:
     def __init__(self, instrument_confi_file:str = None , setup_file_path:str = None , output_folder_path:str = None, \
@@ -126,36 +129,36 @@ class GetPathValues:
 
 class SetPressure(Pressure):
     def __init__(self, setup_file_path:str = None):
-        self._setup_file_path = setup_file_path
+        self.setup_file_path = setup_file_path
         
-    def create_New_pressure_tags(self, num_bottels:int = None)->None:
+    def create_New_pressure_tags(self, num_bottles:int = None)->None:
         from xml.parsers.expat import ExpatError
         try:
-            with open(self._setup_file_path,'r') as f:
+            with open(self.setup_file_path,'r') as f:
                 xmldoc = minidom.parse(f)   
                 Data = xmldoc.getElementsByTagName('WaterSamplerConfiguration')[0]
-                Data.setAttribute("NumberOfWaterBottles", str(num_bottels))
+                Data.setAttribute("NumberOfWaterBottles", str(num_bottles))
                 AutoFireData = Data.getElementsByTagName('AutoFireData')[0]
                 DataTable = AutoFireData.getElementsByTagName('DataTable')            
                 for i in DataTable:
                     RmRow = i.getElementsByTagName('Row')
                 [j.parentNode.removeChild(j) for j in RmRow]
-                for indx, botnum in enumerate(range(1, num_bottels+1)):
+                for indx, botnum in enumerate(range(1, num_bottles+1)):
                     newRow = xmldoc.getElementsByTagName('DataTable')[0].appendChild(xmldoc.createElement("Row"))        
                     newRow.setAttribute("BottleNumber",str(botnum))          
                     newRow.setAttribute("index", str(indx))
                     newRow.setAttribute("FireAt", str(-0)) 
-            with open(self._setup_file_path, 'w', newline='') as f:
+            with open(self.setup_file_path, 'w', newline='') as f:
                 xmldoc.writexml(f)
         except FileNotFoundError:
             print('File not found')
         except ExpatError:
-            pass
+            print('file is empty')
 
     def set_pressure_value(self, pressure_value: list = None):
         try:          
             print('The pressure value is ', pressure_value) 
-            with open(self._setup_file_path,'r') as f:    
+            with open(self.setup_file_path,'r') as f:    
                 xmldoc = minidom.parse(f)        
                 Data = xmldoc.getElementsByTagName('WaterSamplerConfiguration')[0]
                 AutoFireData = Data.getElementsByTagName('AutoFireData')[0]
@@ -166,7 +169,7 @@ class SetPressure(Pressure):
                         RmRow[inx].setAttribute("BottleNumber", str(inx+1))
                         RmRow[inx].setAttribute("index", str(inx))
                         RmRow[inx].setAttribute("FireAt", str(pressure_value[inx]).replace(',', '.'))
-                with open(self._setup_file_path, 'w', newline='') as f:
+                with open(self.setup_file_path, 'w', newline='') as f:
                     xmldoc.writexml(f)
         except  FileNotFoundError:
             print('No file found in the given location')
