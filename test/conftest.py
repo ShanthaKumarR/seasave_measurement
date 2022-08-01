@@ -8,6 +8,9 @@ myDir = os.getcwd()
 sys.path.append(myDir)
 
 from instrument_config import SetPressure, MetaDataWriter, DataDictionary, GetPathValues
+from Dship import Udp
+
+
 
 @pytest.fixture(scope='module')
 def get_path_values_object_init():
@@ -25,4 +28,6 @@ def DataDictionary_obj():
 def SetPressure_obj():
     return SetPressure('test_docs\\test_setup_file.psa')
 
-
+@pytest.fixture(scope='module')
+def Udp_obj():
+    return Udp()
