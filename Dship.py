@@ -1,5 +1,4 @@
 import json
-from posixpath import split
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 import io
@@ -36,28 +35,25 @@ class Dship:
         return data_dict
     
 class Udp:
-    def __init__(self):     
+    def __init__(self, port = 5558):   
+        
         self.udp_running = True
-        self.port = 5558
-        #self.ip = socket.gethostbyname(socket.gethostname())
-        #print(self.ip)
-        self.ip ="127.0.0.1"
+        self.port = int(port)
+        self.ip = socket.gethostbyname(socket.gethostname())
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.ip, self.port))
         self.data_dict = dict()
         self.sock.settimeout(2.0)
-
     def rertive_data(self):
         try:
             data, self.addr = self.sock.recvfrom(1024) 
             data = data.decode('utf-8')
-            print(data.split('\n'))
             return  data.split('\n')
         except socket.timeout:
             return  None
 
-    def splitdata(self, data_split):    
-        print(data_split)
+    def splitdata(self, data_split):   
+        
         meta_data_dict = {'airpressure': 'udp error', 'depth':'udp error', 'longitude':'udp error', 'latitude': 'udp error', 'time': 'udp error', \
             'station_name':'udp error', 'expedition_name':'udp error', 'expedition_number': 'udp error', 'timestamp':'udp error'}  
         if data_split != None:

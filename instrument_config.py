@@ -64,10 +64,11 @@ class DataDictionary(DataStructuringStrategy):
         return data_dict
 
 
+def SBE_carosusel_type()->int:
+    return 5
 
-def SBE_carosusel_type(type:str)->int:
-    if type == 'SBE_carosuel':
-        return 5
+def scanfish_water_sampler_type()->int:
+    return 0
 
 class ComputeLastFileName(ABC):
     @abstractmethod
@@ -99,9 +100,11 @@ class GetPathValues:
                 bottle_firing_type.firing_mode(self.bottle_firing_mode))
 
 
-    def write_file_path(self, path_data:dict)->None:      
+    def write_file_path(self, path_data:dict)->None:   
+
         for key, _ in  path_data.items():
             if key != 'WaterSamplerConfiguration':
+                
                 with open(path_data['SetupFilePath']['value'], 'r') as tags:
                     domObj = minidom.parse(tags)
                     group = domObj.documentElement
@@ -109,7 +112,7 @@ class GetPathValues:
                     Cookie[0].setAttribute('value', path_data[key]['value'])
                     with open(path_data['SetupFilePath']['value'], 'w') as tags:
                         domObj.writexml(tags)
-                   
+                
             else:
                 for d in path_data[key]:
                     for new_key, _ in d.items():
@@ -121,7 +124,8 @@ class GetPathValues:
                             Cookie[0].setAttribute(new_key, d[new_key])
                             with open(path_data['SetupFilePath']['value'], 'w') as tags:
                                 domObj.writexml(tags)
-        
+
+
     def generate_output_file_path(self, output_file_name):
         return self.output_folder_path+'\\'+output_file_name
 
@@ -151,9 +155,9 @@ class SetPressure(Pressure):
             with open(self.setup_file_path, 'w', newline='') as f:
                 xmldoc.writexml(f)
         except FileNotFoundError:
-            print('File not found')
+            pass
         except ExpatError:
-            print('file is empty')
+            pass
 
     def set_pressure_value(self, pressure_value: list = None):
         try:          
@@ -172,7 +176,7 @@ class SetPressure(Pressure):
                 with open(self.setup_file_path, 'w', newline='') as f:
                     xmldoc.writexml(f)
         except  FileNotFoundError:
-            print('No file found in the given location')
+            pass
 
 class MetaDataWriter:
     def __init__(self, setup_file_name, meta_data_dict):
@@ -182,7 +186,7 @@ class MetaDataWriter:
             self.create_new_prompt_tag()
             self.set_mata_data()
         except:
-            print('Problem in collecting Meta data for the GUI ')
+            pass
     def create_new_prompt_tag(self):
         try:
             with open(self.setup_file_path,'r') as f:
@@ -199,7 +203,7 @@ class MetaDataWriter:
             with open(self.setup_file_path, 'w') as f:               
                     xmldoc.writexml(f)
         except FileNotFoundError:
-            print('file is missing')
+            pass
 
     def set_mata_data(self):
         try:          
@@ -213,7 +217,7 @@ class MetaDataWriter:
                 with open(self.setup_file_path, 'w', newline='') as f:
                     xmldoc.writexml(f)
         except  FileNotFoundError:
-            print('No file found in the given location')
+            pass
 
 
 class StartSeaSave:
