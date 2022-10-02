@@ -44,6 +44,7 @@ class Udp:
         self.sock.bind((self.ip, self.port))
         self.data_dict = dict()
         self.sock.settimeout(2.0)
+        
     def rertive_data(self):
         try:
             data, self.addr = self.sock.recvfrom(1024) 

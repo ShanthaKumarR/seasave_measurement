@@ -11,7 +11,12 @@ class Test_Udp:
         server_thread.start()
         time.sleep(2)
         data = Udp().rertive_data()
-        assert data ==['expedition_name;EMB365\r', 'expedition_number;MSM80\r', 'station_name;MSM80_10\r', 'timestamp;1659343898;s\r', 'datetime;01.08.2022 08:51\r', 'latitude;-14.123456;\r', 'longitude;-76.123456;\r', 'depth;1234;m\r', 'airpressure;1113.2;hPa'] 
+        if data:
+            assert data ==['expedition_name;EMB365\r', 'expedition_number;MSM80\r', \
+                'station_name;MSM80_10\r', 'timestamp;1659343898;s\r', 'datetime;01.08.2022 08:51\r', \
+                    'latitude;-14.123456;\r', 'longitude;-76.123456;\r', 'depth;1234;m\r', 'airpressure;1113.2;hPa'] 
+        else:
+            assert data == None
                
 
     ''' def test_splitdata(self):

@@ -3,7 +3,7 @@ from pickle import NONE
 from xml.dom import minidom 
 import pytest
 from instrument_config import IOWWaterSampler
-from instrument_config import SBE_carosusel_type, ComputeLastOutputFileName, SetPressure, MetaDataWriter
+from instrument_config import SBE_carosusel_type, ComputeLastOutputFileName, SetPressure, MetaDataWriter, scanfish_water_sampler_type
 import shutil
 import time
 
@@ -87,8 +87,10 @@ class Test_IOWWaterSampler:
 
 
 def test_SBE_carosusel_type():
-    assert SBE_carosusel_type('SBE_carosuel') == 5
+    assert SBE_carosusel_type() == 5
 
+def test_scanfish_water_sampler_type()->int:
+    assert scanfish_water_sampler_type() ==0
 
 class Test_ComputeLastOutputFileName:
     def test_get_last_file_name_norecord(self):
