@@ -7,8 +7,8 @@ import sys
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from instrument_config import SetPressure, MetaDataWriter, DataDictionary, GetPathValues
-from Dship import Udp
+from src.seasave_measurement.instrument_config import SetPressure, MetaDataWriter, DataDictionary, GetPathValues
+from src.seasave_measurement.Dship import Udp
 
 
 

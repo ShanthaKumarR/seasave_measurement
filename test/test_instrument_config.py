@@ -2,8 +2,8 @@ import os
 from pickle import NONE 
 from xml.dom import minidom 
 import pytest
-from instrument_config import IOWWaterSampler
-from instrument_config import SBE_carosusel_type, ComputeLastOutputFileName, SetPressure, MetaDataWriter, scanfish_water_sampler_type
+from src.seasave_measurement.instrument_config import IOWWaterSampler
+from src.seasave_measurement.instrument_config import SBE_carosusel_type, ComputeLastOutputFileName, SetPressure, MetaDataWriter, scanfish_water_sampler_type
 import shutil
 import time
 

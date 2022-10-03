@@ -1,8 +1,8 @@
 import pytest
-from server_test import UDP_Test_server
+from src.seasave_measurement.server_test import UDP_Test_server
 from threading import Thread
 import time 
-from Dship import Udp
+from src.seasave_measurement.Dship import Udp
 
 class Test_Udp:
     def test_rertive_data(self):

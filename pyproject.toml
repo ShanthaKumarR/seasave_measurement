@@ -1,0 +1,19 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+name = 'seasave_measurement'
+version = 0.0.1
+authors = [{name = 'ShanthaKumarR', email = 'shanthakumar.rajasekar@gmail.com'}]
+readme = 'README.md'
+
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.6"
+dynamic = ["version", "description"]
+[project_urls]
+Documentation = 'https://github.com/ShanthaKumarR/seasave_measurement/blob/main/README.md'
+Source = 'https://github.com/ShanthaKumarR/seasave_measurement'
+
+
