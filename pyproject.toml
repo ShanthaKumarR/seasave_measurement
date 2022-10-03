@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "seasave_measurement"
 
-authors = [{name = 'ShanthaKumarR', email = 'shanthakumar.rajasekar@gmail.com'}]
+authors = [{name = 'Raja sekar', email = 'shanthakumar.rajasekar@gmail.com'}]
 readme = 'README.md'
 
 classifiers = [
